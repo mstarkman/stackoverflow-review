@@ -1,0 +1,96 @@
+APPNAME = 'ember-skeleton'
+
+require 'json'
+require 'rake-pipeline-web-filters'
+
+#######
+# JS Processing
+#######
+output 'public/javascripts'
+
+input 'app' do
+  match "lib/**/*.coffee" do
+    coffee_script
+  end
+
+  match "lib/**/*.js" do
+    minispade({
+      rewrite_requires: true,
+      string: false,
+      module_id_generator: Proc.new { |input| input.path.dup.sub(/\.js$/, '').sub(/lib\//, '') }
+    })
+
+    uglify if ENV['RAKEP_MODE'] == 'production'
+    concat "application.js"
+  end
+
+  match 'templates/**/*.handlebars' do
+    handlebars
+    uglify if ENV['RAKEP_MODE'] == 'production'
+    concat 'templates.js'
+  end
+
+  match "vendor/js/*.js" do
+    uglify if ENV['RAKEP_MODE'] == 'production'
+    concat %w[
+      minispade.js
+      jquery.js
+      handlebars.js
+      ember.js
+      ember-data.js
+      bootstrap.js
+    ].map { |f| "vendor/js/#{f}" }, "libs.js"
+  end
+end
+
+#######
+# CSS Processing
+#######
+output "public/stylesheets"
+
+input "app" do
+  match 'css/**/*.scss' do
+    sass
+  end
+
+  match 'css/**/*.css' do
+    yui_css if ENV['RAKEP_MODE'] == 'production'
+    concat 'application.css'
+  end
+
+  match 'vendor/css/*.css' do
+    yui_css if ENV['RAKEP_MODE'] == 'production'
+    concat %w[
+      bootstrap.css
+      bootstrap-responsive.css
+    ].map { |f| "vendor/css/#{f}" }, 'application.css'
+  end
+end
+
+#######
+# IMG processing
+#######
+output "public/img"
+
+input "app" do
+  match "vendor/img/**/*" do
+    concat do |input|
+      input.sub(/vendor\/img\//, '')
+    end
+  end
+end
+
+#######
+# HTML processing
+#######
+output "public"
+
+input "app" do
+  match "html/index.html" do
+    copy do |input|
+      input.sub(/html\//, '')
+    end
+  end
+end
+
+# vim: filetype=ruby
