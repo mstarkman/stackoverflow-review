@@ -1,1 +1,3 @@
-App.IndexRouter = Ember.Route.extend({})
+require('routers/index_router')
+
+App.IndexRouter = App.TagsIndexRouter
