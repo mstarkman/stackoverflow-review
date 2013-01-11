@@ -6,6 +6,8 @@ gem 'rack'
 gem 'rack-rewrite'
 # gem 'rack-streaming-proxy'
 
+gem 'activesupport'
+
 gem 'sass'
 gem 'compass'
 gem 'coffee-script'
