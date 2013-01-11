@@ -5,6 +5,6 @@ App.TagsIndexRoute = Ember.Route.extend
   model: ->
     App.Tag.find()
 
-  setupControllers: (controller, model) ->
+  setupController: (controller, model) ->
     controller.set('content', model)
 
