@@ -2,6 +2,7 @@ APPNAME = 'ember-skeleton'
 
 require 'json'
 require 'rake-pipeline-web-filters'
+require 'active_support/inflector'
 
 #######
 # JS Processing
@@ -25,7 +26,11 @@ input 'app' do
   end
 
   match 'templates/**/*.handlebars' do
-    handlebars
+    handlebars({
+      key_name_proc: Proc.new do |input|
+        File.basename(input.path, File.extname(input.path)).camelize(:lower)
+      end
+    })
     uglify if ENV['RAKEP_MODE'] == 'production'
     concat 'templates.js'
   end
